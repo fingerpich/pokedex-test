@@ -1,5 +1,6 @@
-import * as pokeapi from 'pokeapi-js-wrapper';
-const pokedexApi = new pokeapi.Pokedex();
+// import * as pokeapi from 'pokeapi-js-wrapper';
+// const pokedexApi = new pokeapi.Pokedex();
+import pokedexApi from './pokemonApi.js';
 
 // root state object.
 // each Vuex instance is just a single state tree.
@@ -14,13 +15,13 @@ const getters = {
 
 // actions
 const actions = {
-    loadPokemons ({ commit }, {limit, offset}) {
+    loadPokemons ({commit}, {limit, offset}) {
         pokedexApi.getPokemonsList({
             limit: limit || 0,
             offset: offset || 10
         })
             .then(function(response) {
-
+                commit('loadPokemons', response.data);
             })
     }
 }
@@ -30,9 +31,8 @@ const actions = {
 // mutations must be synchronous and can be recorded by plugins
 // for debugging purposes.
 const mutations = {
-    receiveTests (state, {items, count}) {
-        state.questions = items
-        state.questionCount = count
+    loadPokemons (state, items) {
+        state.pokemons = items
     },
     removeTest (state, { removedTest }) {
         state.questions.splice(state.questions.indexOf((test) => test.id === removedTest.id), 1)
