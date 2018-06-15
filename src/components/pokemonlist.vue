@@ -1,6 +1,7 @@
 <template>
     <div class="pokemonList">
         <h2>list of pokemons</h2>
+        <el-input placeholder="name" v-model="filterName" @change="handleNameFilter"></el-input>
         <el-table :data="tableData.results"  :default-sort = "{prop: 'name', order: 'descending'}"
                   highlight-current-row @current-change="handleCurrentChange"
                   style="width: 100%">
@@ -35,22 +36,25 @@
         },
         data () {
             return {
-                itemsPerPge: 10
+                itemsPerPge: 10,
+                filterName: ''
             }
         },
         methods: {
-            loadPokemons() {
-                this.$store.dispatch('loadPokemons', {
-                    offset: this.itemsPerPge * (this.currentPage - 1),
-                    limit: this.itemsPerPge,
-                })
-            },
-            handleCurrentChange (currentPage) {
+            loadPokemons(currentPage) {
                 this.$store.dispatch('loadPokemons', {
                     offset: this.itemsPerPge * (currentPage - 1),
                     limit: this.itemsPerPge,
+                    name: this.filterName
                 })
+            },
+            handleNameFilter () {
+                this.loadPokemons(1);
+            },
+            handleCurrentChange (currentPage) {
+                this.loadPokemons(currentPage);
             }
+
         }
     }
 </script>

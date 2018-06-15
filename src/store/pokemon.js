@@ -15,11 +15,12 @@ const getters = {
 
 // actions
 const actions = {
-    loadPokemons ({commit}, {limit, offset}) {
+    loadPokemons ({commit}, {limit, offset, name}) {
         pokedexApi.getPokemonsList({
-            limit: limit || 0,
-            offset: offset || 10
-        })
+            limit: limit || 10,
+            offset: offset || 0,
+            name: name || ''
+    })
             .then(function(response) {
                 commit('loadPokemons', response.data);
             })
