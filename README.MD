@@ -2,4 +2,4 @@
 
 # How to run
 
-open dist/index.html in your no secure mode browser
+Serve dist/index.html in localhost and open localhost in no secure mode browser because of cors problem
