@@ -1,21 +1,22 @@
 <template>
     <div class="pokemonList">
-        <h2>list of pokemons</h2>
-        <el-input placeholder="name" v-model="filterName" @change="handleNameFilter"></el-input>
-        <el-table :data="tableData.results"  :default-sort = "{prop: 'name', order: 'descending'}"
-                  highlight-current-row @current-change="handleCurrentChange"
-                  style="width: 100%">
-            <el-table-column sortable prop="name" label="name"></el-table-column>
-            <el-table-column sortable prop="url" label="url"></el-table-column>
-        </el-table>
-        <div class="paginationBlock">
-            <el-pagination
-                    :page-size="itemsPerPge"
-                    layout="prev, pager, next"
-                    @current-change="handleCurrentChange"
-                    :total="tableData.count">
-            </el-pagination>
+        <div v-if="tableData">
+            <el-input placeholder="name" v-model="filterName"></el-input>
+            <div class="table">
+                <div class="item" :class="{selected: item===selectedPok}" v-for="item in tableData.results" :key="item.name" v-on:click="handleCurrentPokemonChange(item)">
+                    <a :href="item.url">{{item.name}}</a>
+                </div>
+            </div>
+            <div class="paginationBlock">
+                <el-pagination
+                        :page-size="itemsPerPge"
+                        layout="prev, pager, next"
+                        @current-change="handleCurrentPageChange"
+                        :total="tableData.count">
+                </el-pagination>
+            </div>
         </div>
+        <div v-else class="loader"></div>
     </div>
 </template>
 
@@ -23,36 +24,43 @@
     export default {
         name: 'pokemonList',
         props: {
+            list: {}
         },
         computed: {
             tableData: {
                 get: function () {
-                    return this.$store.getters.pokemons
+                    if (this.list) {
+                        let filteredList = this.list.slice();
+                        if (this.filterName) {
+                            filteredList = filteredList.filter(p => p.name.indexOf(this.filterName) > -1);
+                        }
+                        const offset = this.itemsPerPge * (this.currentPage - 1);
+                        const limit = this.itemsPerPge;
+                        return {
+                            count: filteredList.length,
+                            results: filteredList.slice(offset, offset + limit)
+                        }
+                    }
                 }
             }
         },
         created () {
-            this.loadPokemons()
         },
         data () {
             return {
-                itemsPerPge: 10,
-                filterName: ''
+                currentPage: 1,
+                itemsPerPge: 7,
+                filterName: '',
+                selectedPok: null
             }
         },
         methods: {
-            loadPokemons(currentPage) {
-                this.$store.dispatch('loadPokemons', {
-                    offset: this.itemsPerPge * (currentPage - 1),
-                    limit: this.itemsPerPge,
-                    name: this.filterName
-                })
+            handleCurrentPokemonChange (selectedPokemon) {
+                this.selectedPok = selectedPokemon;
+                this.$emit('selectPokemon', selectedPokemon);
             },
-            handleNameFilter () {
-                this.loadPokemons(1);
-            },
-            handleCurrentChange (currentPage) {
-                this.loadPokemons(currentPage);
+            handleCurrentPageChange(page) {
+                this.currentPage = page;
             }
 
         }
@@ -60,5 +68,17 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="scss">
+    .table {
+        .item{
+            padding: 1rem;
+            border: 1px solid whitesmoke;
+            text-align: left;
+            color: #777;
+            font-size: 0.8rem;
+            &.selected{
+                background: #eee;
+            }
+        }
+    }
 </style>

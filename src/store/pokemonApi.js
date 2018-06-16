@@ -10,5 +10,10 @@ class pokemonApi {
             headers:  {"Access-Control-Allow-Origin": "*"}
         });
     }
+    getPokemonByName (name) {
+        return axios.get(this.baseUrl + 'pokemon/'+ name,   {
+            headers:  {"Access-Control-Allow-Origin": "*"}
+        });
+    }
 }
 export default new pokemonApi();

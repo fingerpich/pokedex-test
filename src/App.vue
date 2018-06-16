@@ -1,19 +1,16 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <pokemon-list></pokemon-list>
+  <container></container>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-import PokemonList from "./components/pokemonlist";
+import Container from "./components/container";
 
 export default {
   name: 'app',
   components: {
-      PokemonList,
-    HelloWorld
+      Container
   }
 }
 </script>

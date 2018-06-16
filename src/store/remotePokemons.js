@@ -5,24 +5,30 @@ import pokedexApi from './pokemonApi.js';
 // root state object.
 // each Vuex instance is just a single state tree.
 const state = {
-    pokemons: [],
+    apiPokemons: [],
+    selectedPokemon: null,
 }
 
 // getters
 const getters = {
-    pokemons: state => state.pokemons,
+    apiPokemons: state => state.apiPokemons,
+    selectedPokemon: state => state.selectedPokemon,
 }
 
 // actions
 const actions = {
-    loadPokemons ({commit}, {limit, offset, name}) {
+    loadApiPokemons({commit}) {
         pokedexApi.getPokemonsList({
-            limit: limit || 10,
-            offset: offset || 0,
-            name: name || ''
-    })
+            limit: 10000
+        }).then((res) => {
+            commit('loadPokemons', res.data);
+        })
+    },
+    loadPokemon ({commit}, pokemon) {
+        commit('setSelectedPokemon', null);
+        pokedexApi.getPokemonByName(pokemon.name)
             .then(function(response) {
-                commit('loadPokemons', response.data);
+                commit('setSelectedPokemon', response.data);
             })
     }
 }
@@ -33,11 +39,11 @@ const actions = {
 // for debugging purposes.
 const mutations = {
     loadPokemons (state, items) {
-        state.pokemons = items
+        state.apiPokemons = items
     },
-    removeTest (state, { removedTest }) {
-        state.questions.splice(state.questions.indexOf((test) => test.id === removedTest.id), 1)
-    }
+    setSelectedPokemon(state, item) {
+        state.selectedPokemon = item
+    },
 }
 
 export default {
